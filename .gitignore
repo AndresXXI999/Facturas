@@ -7,6 +7,7 @@ node_modules/
 # IDE files
 .vscode/
 .idea/
+Facturas.code-workspace
 
 # System files
 .DS_Store
