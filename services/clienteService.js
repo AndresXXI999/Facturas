@@ -1,4 +1,4 @@
-import Cliente from './models/Cliente.js';
+import { Cliente } from '../models/index.js';
 
 class ClienteServicio {
 
@@ -12,11 +12,11 @@ class ClienteServicio {
 
     async obtenerClientePorId(id) {
         try {
-            return await Cliente.findByPk(id);
-            if(!Cliente) {
+            const cliente = await Cliente.findByPk(id);
+            if(!cliente) {
                 throw new Error('No se encontro el cliente');
             }
-            return Cliente;
+            return cliente;
         } catch (error) {
             throw new Error(`Error al obtener el cliente: ${error.message}`);
         }
@@ -24,7 +24,7 @@ class ClienteServicio {
 
     async crearCliente(nuevoCliente) {
         try {
-            return await Cliente.create(clienteData);
+            return await Cliente.create(nuevoCliente);
         } catch (error) {
             throw new Error(`Error al crear el cliente: ${error.message}`);
         }
@@ -42,7 +42,7 @@ class ClienteServicio {
 
             return await this.obtenerClientePorId(id);
         } catch (error) {
-            throw new Error(`Error al actualizar el cliente: ${error.message}`);0
+            throw new Error(`Error al actualizar el cliente: ${error.message}`);
         }
     }
 
