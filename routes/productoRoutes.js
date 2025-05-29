@@ -3,48 +3,48 @@ import { productoServicio } from '../services/productoService.js';
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
     try {
         const productos = await productoServicio.obtenerProductos();
         res.json(productos);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     }
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', async (req, res, next) => {
     try {
         const producto = await productoServicio.obtenerProductoPorId(req.params.id);
         res.json(producto);
     } catch (error) {
-        res.status(404).json({ error: error.message });
+        next(error);
     }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
     try {
         const nuevoProducto = await productoServicio.crearProducto(req.body);
         res.status(201).json(nuevoProducto);
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        next(error);
     }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', async (req, res, next) => {
     try {
         const productoActualizado = await productoServicio.actualizarProducto(req.params.id, req.body);
         res.json(productoActualizado);
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        next(error);
     }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', async (req, res, next) => {
     try {
         const resultado = await productoServicio.borrarProducto(req.params.id);
         res.json(resultado);
     } catch (error) {
-        res.status(404).json({ error: error.message });
+        next(error);
     }
 });
 

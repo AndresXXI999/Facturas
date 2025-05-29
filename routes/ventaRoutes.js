@@ -3,50 +3,49 @@ import { ventaServicio } from '../services/ventaService.js';
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
     try {
         const ventas = await ventaServicio.obtenerVentas();
         res.json(ventas);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     }
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', async (req, res, next) => {
     try {
         const venta = await ventaServicio.obtenerVentaPorId(req.params.id);
         res.json(venta);
     } catch (error) {
-        res.status(404).json({ error: error.message });
+        next(error);
     }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
     try {
         const nuevaVenta = await ventaServicio.crearVenta(req.body);
         res.status(201).json(nuevaVenta);
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        next(error);
     }
 });
 
-// Updated PATCH routes with explicit path syntax
-router.patch('/:id(estado)', async (req, res) => {
+router.patch('/:id/estado', async (req, res, next) => {
     try {
         const { estado } = req.body;
         const ventaActualizada = await ventaServicio.actualizarEstadoVenta(req.params.id, estado);
         res.json(ventaActualizada);
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        next(error);
     }
 });
 
-router.patch('/:id(cancelar)', async (req, res) => {
+router.patch('/:id/cancelar', async (req, res, next) => {
     try {
         const resultado = await ventaServicio.cancelarVenta(req.params.id);
         res.json(resultado);
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        next(error);
     }
 });
 
