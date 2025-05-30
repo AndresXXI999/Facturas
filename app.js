@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { sequelize } from './config/database.js';
 
-// Import routes
+// Importar rutas
 import clienteRoutes from './routes/clienteRoutes.js';
 import productoRoutes from './routes/productoRoutes.js';
 import ventaRoutes from './routes/ventaRoutes.js';
@@ -41,8 +41,8 @@ app.use((err, req, res, next) => {
     });
 });
 
-// 404 handler
-app.use('*', (req, res) => {
+// 404 handler - wildcards (*) deben tener un nombre en Express v5
+app.use('/*splat', (req, res) => {
     res.status(404).json({ 
         error: 'Ruta no encontrada',
         path: req.originalUrl 
