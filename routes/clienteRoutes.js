@@ -9,7 +9,7 @@ router.get('/', async (req, res, next) => {
         const clientes = await clienteServicio.obtenerClientes();
         res.json(clientes);
     } catch (error) {
-        next(error); // Pass error to error handler
+        next(error);
     }
 });
 

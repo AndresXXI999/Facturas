@@ -3,6 +3,8 @@ import { productoServicio } from '../services/productoService.js';
 
 const router = express.Router();
 
+
+// GET api/productos - obtener todos los productos
 router.get('/', async (req, res, next) => {
     try {
         const productos = await productoServicio.obtenerProductos();
@@ -12,6 +14,7 @@ router.get('/', async (req, res, next) => {
     }
 });
 
+// GET /api/productos/:id - Obtener producto por ID
 router.get('/:id', async (req, res, next) => {
     try {
         const producto = await productoServicio.obtenerProductoPorId(req.params.id);
@@ -21,6 +24,7 @@ router.get('/:id', async (req, res, next) => {
     }
 });
 
+// POST /api/productos - Crear nuevo producto
 router.post('/', async (req, res, next) => {
     try {
         const nuevoProducto = await productoServicio.crearProducto(req.body);
@@ -30,6 +34,8 @@ router.post('/', async (req, res, next) => {
     }
 });
 
+
+// PUT /api/productos/:id - Actualizar producto
 router.put('/:id', async (req, res, next) => {
     try {
         const productoActualizado = await productoServicio.actualizarProducto(req.params.id, req.body);
@@ -39,6 +45,8 @@ router.put('/:id', async (req, res, next) => {
     }
 });
 
+
+// DELETE /api/productos/:id - Eliminar producto
 router.delete('/:id', async (req, res, next) => {
     try {
         const resultado = await productoServicio.borrarProducto(req.params.id);
