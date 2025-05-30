@@ -10,6 +10,7 @@ node_modules/
 Facturas.code-workspace
 
 # System files
+facturas/
 .DS_Store
 Thumbs.db
 
