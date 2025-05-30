@@ -1,15 +1,16 @@
 import { Venta, DetalleVenta, Cliente, Producto } from '../models/index.js';
 import { sequelize } from '../config/database.js';
+import { pdfService } from './pdfService.js';
 
 class VentaServicio {
     async obtenerVentas() {
         try {
             return await Venta.findAll({
                 include: [
-                    { model: Cliente },
+                    { model: Cliente, as: 'cliente' },
                     { 
-                        model: DetalleVenta,
-                        include: [{ model: Producto }]
+                        model: DetalleVenta, as: 'detalles',
+                        include: [{ model: Producto, as: 'producto' }]
                     }
                 ]
             });
@@ -22,10 +23,10 @@ class VentaServicio {
         try {
             const venta = await Venta.findByPk(id, {
                 include: [
-                    { model: Cliente },
+                    { model: Cliente, as: 'cliente' },
                     { 
-                        model: DetalleVenta,
-                        include: [{ model: Producto }]
+                        model: DetalleVenta, as: 'detalles',
+                        include: [{ model: Producto, as: 'producto' }]
                     }
                 ]
             });
@@ -94,12 +95,18 @@ class VentaServicio {
 
             await transaction.commit();
 
-            // Retornar la venta completa con relaciones
-            return await this.obtenerVentaPorId(venta.id);
+            // Obtener datos de la venta completos para generación del pdf
+            const ventaCompleta = await this.obtenerVentaParaPDF(venta.id);
+
+            // Generate PDF asynchronously
+            pdfService.generarFactura(ventaCompleta)
+                .catch(err => console.error("Error al generar PDF:", err));
+                
+            return ventaCompleta;
 
         } catch (error) {
             await transaction.rollback();
-            throw new Error(`Error creando venta: ${error.message}`);
+            throw error;
         }
     }
 
@@ -130,8 +137,11 @@ class VentaServicio {
                 throw new Error('La venta ya está cancelada');
             }
 
+            // Utilizar el nombre de propiedad correcto basado en las asociaciones del modelo
+            const detalles = venta.detalles || venta.DetalleVenta || [];
+
             // Restaurar stock de productos
-            for (const detalle of venta.DetalleVenta) {
+            for (const detalle of detalles) {
                 const producto = await Producto.findByPk(detalle.productoId);
                 await producto.update({
                     stock: producto.stock + detalle.cantidad
@@ -147,6 +157,31 @@ class VentaServicio {
         } catch (error) {
             await transaction.rollback();
             throw new Error(`Error cancelando venta: ${error.message}`);
+        }
+    }
+
+    async obtenerVentaParaPDF(id) {
+        try {
+            const venta = await this.obtenerVentaPorId(id);
+            
+            // Verificar si el cliente existe
+            if (!venta.cliente && !venta.Cliente) {
+                throw new Error('Cliente no encontrado para esta venta');
+            }
+            
+            // Utilizar clienteData estándar
+            venta.clienteData = venta.cliente || venta.Cliente;
+            
+            // Revisar si los detalles existen y si se pueden iterar
+            const detalles = venta.detalles || venta.DetalleVenta || [];
+            if (!Array.isArray(detalles) || detalles.length === 0) {
+                throw new Error('Venta no tiene productos');
+            }
+            venta.detallesData = detalles;
+            
+            return venta;
+        } catch (error) {
+            throw new Error(`Error preparando venta para PDF: ${error.message}`);
         }
     }
 }
