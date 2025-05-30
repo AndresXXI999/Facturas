@@ -26,7 +26,8 @@ const Venta = sequelize.define('Venta', {
         defaultValue: 'pendiente'
     }
 }, {
-    timestamps: true
+    timestamps: false,
+    tableName: 'Venta'
 });
 
 export default Venta;

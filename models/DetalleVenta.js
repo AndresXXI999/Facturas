@@ -29,7 +29,8 @@ const DetalleVenta = sequelize.define('DetalleVenta', {
         allowNull: false,
     }
 }, {
-    timestamps: false
+    timestamps: false,
+    tableName: 'DetalleVenta'
 });
 
 export default DetalleVenta;

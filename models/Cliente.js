@@ -22,7 +22,8 @@ const Cliente = sequelize.define(
             unique: true
         }
 }, {
-    timestamps: false
+    timestamps: false,
+    tableName: 'Cliente'
 });
 
 export default Cliente;
