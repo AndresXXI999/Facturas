@@ -1,4 +1,4 @@
-import { Producto } from '../models/index.js';
+import { Producto, Proveedor } from '../models/index.js'; // Add Proveedor
 
 class ProductoServicio {
     async obtenerProductos() {
@@ -23,6 +23,17 @@ class ProductoServicio {
 
     async crearProducto(nuevoProducto) {
         try {
+            // Validate required fields
+            if (!nuevoProducto.nombre || !nuevoProducto.precio_unitario || !nuevoProducto.stock || !nuevoProducto.proveedorId) {
+                throw new Error('Todos los campos son obligatorios');
+            }
+            
+            // Verify provider exists
+            const proveedor = await Proveedor.findByPk(nuevoProducto.proveedorId);
+            if (!proveedor) {
+                throw new Error('Proveedor no encontrado');
+            }
+            
             return await Producto.create(nuevoProducto);
         } catch (error) {
             throw new Error(`Error creando producto: ${error.message}`);
@@ -31,6 +42,14 @@ class ProductoServicio {
 
     async actualizarProducto(id, datosActualizados) {
         try {
+            // If updating provider, verify it exists
+            if (datosActualizados.proveedorId) {
+                const proveedor = await Proveedor.findByPk(datosActualizados.proveedorId);
+                if (!proveedor) {
+                    throw new Error('Proveedor no encontrado');
+                }
+            }
+            
             const [numFilasActualizadas] = await Producto.update(datosActualizados, {
                 where: { id }
             });

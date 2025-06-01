@@ -5,7 +5,9 @@ import { sequelize } from './config/database.js';
 // Importar rutas
 import clienteRoutes from './routes/clienteRoutes.js';
 import productoRoutes from './routes/productoRoutes.js';
-import ventaRoutes from './routes/ventaRoutes.js';
+import facturaRoutes from './routes/facturaRoutes.js';
+import proveedorRoutes from './routes/proveedorRoutes.js';
+import usuarioRoutes from './routes/usuarioRoutes.js';
 
 const app = express();
 
@@ -30,7 +32,9 @@ app.get('/', (req, res) => {
 // API Routes
 app.use('/api/clientes', clienteRoutes);
 app.use('/api/productos', productoRoutes);
-app.use('/api/ventas', ventaRoutes);
+app.use('/api/facturas', facturaRoutes);
+app.use('/api/proveedores', proveedorRoutes);
+app.use('/api/usuarios', usuarioRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

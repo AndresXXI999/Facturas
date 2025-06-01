@@ -1,7 +1,6 @@
 import { Cliente } from '../models/index.js';
 
 class ClienteServicio {
-
     async obtenerClientes() {
         try {
             return await Cliente.findAll();
@@ -24,6 +23,11 @@ class ClienteServicio {
 
     async crearCliente(nuevoCliente) {
         try {
+            // Add validation for required fields
+            if (!nuevoCliente.nombre || !nuevoCliente.direccion || !nuevoCliente.telefono || !nuevoCliente.correo) {
+                throw new Error('Todos los campos son obligatorios');
+            }
+            
             return await Cliente.create(nuevoCliente);
         } catch (error) {
             throw new Error(`Error al crear el cliente: ${error.message}`);

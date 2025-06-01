@@ -1,13 +1,13 @@
 import { sequelize } from '../config/database.js'
 import { DataTypes } from 'sequelize';
 
-const DetalleVenta = sequelize.define('DetalleVenta', {
+const DetalleFactura = sequelize.define('DetalleFactura', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
     },
-    ventaId: {
+    facturaId: {  // Updated field name
         type: DataTypes.INTEGER,
         allowNull: false,
     },
@@ -20,17 +20,14 @@ const DetalleVenta = sequelize.define('DetalleVenta', {
         allowNull: false,
         defaultValue: 1
     },
-    precioUnitario: {
+    precio_unitario: {  // Renamed field
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
-    },
-    subtotal: {
-        type: DataTypes.DECIMAL(10, 2),
-        allowNull: false,
+        field: 'precio_unitario'
     }
 }, {
     timestamps: false,
-    tableName: 'DetalleVenta'
+    tableName: 'DETALLE_FACTURA'  // Updated table name
 });
 
-export default DetalleVenta;
+export default DetalleFactura;

@@ -12,18 +12,23 @@ const Cliente = sequelize.define(
             type: DataTypes.STRING(50),
             allowNull: false,
         },
-        apellido: {
+        direccion: {  // Added field
             type: DataTypes.STRING(50),
-            allowNull: false
+            allowNull: false,
         },
         telefono: {
             type: DataTypes.STRING(15),
             allowNull: false,
             unique: true
+        },
+        correo: {  // Added field
+            type: DataTypes.STRING(50),
+            allowNull: false,
+            validate: { isEmail: true }
         }
 }, {
     timestamps: false,
-    tableName: 'Cliente'
+    tableName: 'CLIENTE'
 });
 
 export default Cliente;

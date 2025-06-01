@@ -3,11 +3,8 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// Obtener directorio actual
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
 class PdfService {
-    async generarFactura(venta) {
+async generarFactura(venta) {
         return new Promise((resolve, reject) => {
             try {
                 // Crear documento pdf
@@ -40,37 +37,46 @@ class PdfService {
         });
     }
 
-    _generarContenidoFactura(doc, venta) {
+    _generarContenidoFactura(doc, factura) {
         // Header
         doc.fontSize(20).text('FACTURA', { align: 'center' });
         doc.moveDown();
         
-        // Información de factura
+        // Invoice information
         doc.fontSize(12)
-           .text(`Número: ${venta.id}`, { align: 'left' })
-           .text(`Fecha: ${venta.fecha.toLocaleDateString()}`, { align: 'left' })
-           .text(`Estado: ${venta.estado}`, { align: 'left' })
+           .text(`Número: ${factura.id}`, { align: 'left' })
+           .text(`Fecha: ${factura.fecha.toLocaleDateString()}`, { align: 'left' })
            .moveDown();
         
-        // Información del cliente, usar clienteData estándar
-        const cliente = venta.clienteData || venta.cliente || venta.Cliente;
+        // Client information
+        const cliente = factura.clienteData;
         doc.fontSize(14).text('Cliente:', { underline: true });
         doc.fontSize(12)
-            .text(`Nombre: ${cliente.nombre} ${cliente.apellido}`)
+            .text(`Nombre: ${cliente.nombre}`)
+            .text(`Dirección: ${cliente.direccion}`)
             .text(`Teléfono: ${cliente.telefono}`)
+            .text(`Email: ${cliente.correo}`)
             .moveDown();
         
-        // Header de la tabla Productos
+        // User information
+        const usuario = factura.usuario;
+        doc.fontSize(14).text('Atendido por:', { underline: true });
+        doc.fontSize(12)
+            .text(`Nombre: ${usuario.nombre}`)
+            .text(`Usuario: ${usuario.usuario}`)
+            .moveDown();
+        
+        // Products header
         doc.fontSize(14).text('Productos:', { underline: true });
         
-        // Obtener detalles, utilizar detallesData estándar
-        const detalles = venta.detallesData || venta.detalles || venta.DetalleVenta || [];
+        // Get details
+        const detalles = factura.detallesData || [];
         this._generarTablaProductos(doc, detalles);
         
         // Total
         doc.moveDown()
            .fontSize(14)
-           .text(`Total: $${venta.total.toFixed(2)}`, { align: 'right' });
+           .text(`Total: $${factura.total.toFixed(2)}`, { align: 'right' });
     }
 
     _generarTablaProductos(doc, detalles) {
@@ -98,22 +104,19 @@ class PdfService {
         // Table rows
         let y = doc.y;
         detalles.forEach(detalle => {
-            const producto = detalle.producto || detalle.Producto;
-            if (!producto) {
-                console.warn('Detalle sin producto encontrado:', detalle);
-                return;
-            }
+            const producto = detalle.producto;
+            const subtotal = detalle.cantidad * detalle.precio_unitario;
             
             doc.font('Helvetica')
                .fontSize(10)
                .text(producto.nombre, col1, y)
                .text(detalle.cantidad.toString(), col2, y)
-               .text(`$${detalle.precioUnitario.toFixed(2)}`, col3, y)
-               .text(`$${detalle.subtotal.toFixed(2)}`, col4, y);
+               .text(`$${detalle.precio_unitario.toFixed(2)}`, col3, y)
+               .text(`$${subtotal.toFixed(2)}`, col4, y);
             
             y += 25;
         });
-        
+
         doc.y = y;
     }
 }

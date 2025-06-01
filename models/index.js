@@ -1,35 +1,65 @@
 import Cliente from './Cliente.js';
 import Producto from './Producto.js';
-import Venta from './Venta.js';
-import DetalleVenta from './DetalleVenta.js';
+import Factura from './Factura.js';  // Renamed
+import DetalleFactura from './DetalleFactura.js';  // Renamed
+import Proveedor from './Proveedor.js';  // New
+import Usuario from './Usuario.js';  // New
 
-//Asociaciones
-Cliente.hasMany(Venta, { 
+// Cliente-Factura
+Cliente.hasMany(Factura, { 
     foreignKey: 'clienteId',
-    as: 'ventas'
+    as: 'facturas'
 });
-Venta.belongsTo(Cliente, { 
+Factura.belongsTo(Cliente, { 
     foreignKey: 'clienteId',
     as: 'cliente'
 });
 
-Venta.hasMany(DetalleVenta, { 
-    foreignKey: 'ventaId',
+// Factura-DetalleFactura
+Factura.hasMany(DetalleFactura, { 
+    foreignKey: 'facturaId',
     as: 'detalles'
 });
-DetalleVenta.belongsTo(Venta, { 
-    foreignKey: 'ventaId',
-    as: 'venta'
+DetalleFactura.belongsTo(Factura, { 
+    foreignKey: 'facturaId',
+    as: 'factura'
 });
 
-Producto.hasMany(DetalleVenta, { 
+// Producto-DetalleFactura
+Producto.hasMany(DetalleFactura, { 
     foreignKey: 'productoId',
-    as: 'detallesVenta'
+    as: 'detallesFactura'
 });
-DetalleVenta.belongsTo(Producto, { 
+DetalleFactura.belongsTo(Producto, { 
     foreignKey: 'productoId',
     as: 'producto'
 });
 
-//Exportar todos los modelos
-export { Cliente, Producto, Venta, DetalleVenta };
+// Proveedor-Producto
+Proveedor.hasMany(Producto, { 
+    foreignKey: 'proveedorId',
+    as: 'productos'
+});
+Producto.belongsTo(Proveedor, { 
+    foreignKey: 'proveedorId',
+    as: 'proveedor'
+});
+
+// Usuario-Factura
+Usuario.hasMany(Factura, { 
+    foreignKey: 'usuarioId',
+    as: 'facturas'
+});
+Factura.belongsTo(Usuario, { 
+    foreignKey: 'usuarioId',
+    as: 'usuario'
+});
+
+export { 
+    Cliente, 
+    Producto, 
+    Factura, 
+    DetalleFactura, 
+    Proveedor, 
+    Usuario 
+};
