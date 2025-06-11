@@ -23,12 +23,11 @@ class ProductoServicio {
 
     async crearProducto(nuevoProducto) {
         try {
-            // Validate required fields
             if (!nuevoProducto.nombre || !nuevoProducto.precio_unitario || !nuevoProducto.stock || !nuevoProducto.proveedorId) {
                 throw new Error('Todos los campos son obligatorios');
             }
             
-            // Verify provider exists
+            // Verificar si proveedor existe
             const proveedor = await Proveedor.findByPk(nuevoProducto.proveedorId);
             if (!proveedor) {
                 throw new Error('Proveedor no encontrado');
@@ -42,7 +41,7 @@ class ProductoServicio {
 
     async actualizarProducto(id, datosActualizados) {
         try {
-            // If updating provider, verify it exists
+            // Si se actualiza el proveedor, verificar si existe
             if (datosActualizados.proveedorId) {
                 const proveedor = await Proveedor.findByPk(datosActualizados.proveedorId);
                 if (!proveedor) {

@@ -11,7 +11,7 @@ Facturas.code-workspace
 
 # System files
 sqlQueries/
-facturas/
+facturasPDF/
 .DS_Store
 Thumbs.db
 

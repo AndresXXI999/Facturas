@@ -23,7 +23,6 @@ class ClienteServicio {
 
     async crearCliente(nuevoCliente) {
         try {
-            // Add validation for required fields
             if (!nuevoCliente.nombre || !nuevoCliente.direccion || !nuevoCliente.telefono || !nuevoCliente.correo) {
                 throw new Error('Todos los campos son obligatorios');
             }

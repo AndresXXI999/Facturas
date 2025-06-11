@@ -1,9 +1,9 @@
 import Cliente from './Cliente.js';
 import Producto from './Producto.js';
-import Factura from './Factura.js';  // Renamed
-import DetalleFactura from './DetalleFactura.js';  // Renamed
-import Proveedor from './Proveedor.js';  // New
-import Usuario from './Usuario.js';  // New
+import Factura from './Factura.js';
+import DetalleFactura from './DetalleFactura.js';
+import Proveedor from './Proveedor.js';
+import Usuario from './Usuario.js';
 
 // Cliente-Factura
 Cliente.hasMany(Factura, { 

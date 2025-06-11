@@ -11,7 +11,7 @@ const Factura = sequelize.define('Factura', {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
-    usuarioId: {  // Added field
+    usuarioId: {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
@@ -27,7 +27,7 @@ const Factura = sequelize.define('Factura', {
     }
 }, {
     timestamps: false,
-    tableName: 'FACTURA'  // Updated table name
+    tableName: 'FACTURA'
 });
 
 export default Factura;

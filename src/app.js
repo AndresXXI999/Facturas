@@ -19,12 +19,14 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.get('/', (req, res) => {
     res.json({ 
-        message: 'Facturas API - Sistema de Facturación',
-        version: '1.0.0',
-        endpoints: {
+        mensaje: 'Ver archivo README.md en la carpeta del proyecto',
+        ubicacion: 'facturas/README.md',
+        api_endpoints: {
             clientes: '/api/clientes',
             productos: '/api/productos',
-            ventas: '/api/ventas'
+            facturas: '/api/facturas',
+            proveedores: '/api/proveedores',
+            usuarios: '/api/usuarios'
         }
     });
 });
@@ -36,7 +38,7 @@ app.use('/api/facturas', facturaRoutes);
 app.use('/api/proveedores', proveedorRoutes);
 app.use('/api/usuarios', usuarioRoutes);
 
-// Error handling middleware
+// Manejo de errores para Middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ 
@@ -53,7 +55,7 @@ app.use('/*splat', (req, res) => {
     });
 });
 
-// Database sync function
+// Funcion para sincronizar base de datos
 async function syncDatabase() {
     try {
         await sequelize.sync({ force: false });

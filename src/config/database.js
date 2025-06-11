@@ -8,7 +8,7 @@ export const sequelize = new Sequelize(
     process.env.DB_PASSWORD,
     {
         host: process.env.DB_HOST,
-        dialect: process.env.DB_DIALECT,
+        dialect: process.env.DB_DIALECT || 'mssql',
         port: parseInt(process.env.DB_PORT), //convertir cadena a numero
         dialectOptions: {
             options: {
@@ -19,6 +19,7 @@ export const sequelize = new Sequelize(
     }
 );
 
+//Funcion para probar si la base de datos esta activa y funcionando
 (async () => {
     try {
         await sequelize.authenticate();

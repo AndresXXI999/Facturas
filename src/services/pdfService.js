@@ -11,7 +11,7 @@ async generarFactura(venta) {
                 const doc = new PDFDocument({ size: 'A4', margin: 50 });
                 
                 // Crear directorio si aun no existe
-                const dir = path.resolve('./facturas');
+                const dir = path.resolve('./facturasPDF');
                 if (!fs.existsSync(dir)) {
                     fs.mkdirSync(dir, { recursive: true });
                 }
@@ -42,13 +42,13 @@ async generarFactura(venta) {
         doc.fontSize(20).text('FACTURA', { align: 'center' });
         doc.moveDown();
         
-        // Invoice information
+        // Informacion de factura
         doc.fontSize(12)
            .text(`Número: ${factura.id}`, { align: 'left' })
            .text(`Fecha: ${factura.fecha.toLocaleDateString()}`, { align: 'left' })
            .moveDown();
         
-        // Client information
+        // Informacion de cliente
         const cliente = factura.clienteData;
         doc.fontSize(14).text('Cliente:', { underline: true });
         doc.fontSize(12)
@@ -58,25 +58,23 @@ async generarFactura(venta) {
             .text(`Email: ${cliente.correo}`)
             .moveDown();
         
-        // User information
+        // Informacion de usuario
         const usuario = factura.usuario;
-        doc.fontSize(14).text('Atendido por:', { underline: true });
-        doc.fontSize(12)
-            .text(`Nombre: ${usuario.nombre}`)
-            .text(`Usuario: ${usuario.usuario}`)
+        doc.fontSize(14).text('Atendido por: ');
+        doc.fontSize(12).text(`${usuario.nombre}`)
             .moveDown();
         
-        // Products header
+        // Header de productos
         doc.fontSize(14).text('Productos:', { underline: true });
         
-        // Get details
+        // Obtener detalles
         const detalles = factura.detallesData || [];
         this._generarTablaProductos(doc, detalles);
         
         // Total
         doc.moveDown()
            .fontSize(14)
-           .text(`Total: $${factura.total.toFixed(2)}`, { align: 'right' });
+           .text(`Total: Q.${factura.total.toFixed(2)}`, { align: 'right' });
     }
 
     _generarTablaProductos(doc, detalles) {
@@ -92,7 +90,7 @@ async generarFactura(venta) {
         const col3 = 350;
         const col4 = 450;
         
-        // Table header
+        // Header de tabla
         doc.font('Helvetica-Bold')
            .fontSize(12)
            .text('Producto', col1, tableTop)
@@ -101,7 +99,7 @@ async generarFactura(venta) {
            .text('Subtotal', col4, tableTop)
            .moveDown();
         
-        // Table rows
+        // Filas de tabla
         let y = doc.y;
         detalles.forEach(detalle => {
             const producto = detalle.producto;
@@ -111,8 +109,8 @@ async generarFactura(venta) {
                .fontSize(10)
                .text(producto.nombre, col1, y)
                .text(detalle.cantidad.toString(), col2, y)
-               .text(`$${detalle.precio_unitario.toFixed(2)}`, col3, y)
-               .text(`$${subtotal.toFixed(2)}`, col4, y);
+               .text(`Q.${detalle.precio_unitario.toFixed(2)}`, col3, y)
+               .text(`Q.${subtotal.toFixed(2)}`, col4, y);
             
             y += 25;
         });

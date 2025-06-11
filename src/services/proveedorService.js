@@ -24,7 +24,7 @@ class ProveedorServicio {
 
     async crearProveedor(nuevoProveedor) {
         try {
-            // Validate required fields
+            // Validar campos requeridos
             const requiredFields = ['nombre', 'direccion', 'telefono', 'correo'];
             const missingFields = requiredFields.filter(field => !nuevoProveedor[field]);
             

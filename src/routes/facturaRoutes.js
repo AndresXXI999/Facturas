@@ -48,4 +48,25 @@ router.get('/:id/pdf', async (req, res, next) => {
     }
 });
 
+// DELETE /api/facturas/:id - Eliminar factura por ID
+router.delete('/:id', async (req, res, next) => {
+    try {
+        const id = req.params.id;
+        await facturaServicio.eliminarFactura(id);
+        res.status(204).send(); // No Content
+    } catch (error) {
+        next(error);
+    }
+});
+
+// PUT /api/facturas/:id - Actualizar factura
+router.put('/:id', async (req, res, next) => {
+    try {
+        const facturaActualizada = await facturaServicio.actualizarFactura(req.params.id, req.body);
+        res.json(facturaActualizada);
+    } catch (error) {
+        next(error);
+    }
+});
+
 export default router;

@@ -50,19 +50,19 @@ class FacturaServicio {
         try {
             const { clienteId, usuarioId, productos } = datosFactura;
             
-            // Verify client exists
+            // Verificar si el cliente existe
             const cliente = await Cliente.findByPk(clienteId);
             if (!cliente) {
                 throw new Error('Cliente no encontrado');
             }
             
-            // Verify user exists
+            // Verificar si el usuario existe
             const usuario = await Usuario.findByPk(usuarioId);
             if (!usuario) {
                 throw new Error('Usuario no encontrado');
             }
 
-            // Create the invoice
+            // Crear la factura
             const factura = await Factura.create({
                 clienteId,
                 usuarioId,
@@ -72,7 +72,7 @@ class FacturaServicio {
 
             let total = 0;
 
-            // Create invoice details
+            // Crear los detalles de la factura
             for (const item of productos) {
                 const producto = await Producto.findByPk(item.productoId);
                 if (!producto) {
@@ -86,7 +86,7 @@ class FacturaServicio {
                 const subtotal = parseFloat(producto.precio_unitario) * item.cantidad;
                 total += subtotal;
 
-                // Create detail
+                // Crear detalle
                 await DetalleFactura.create({
                     facturaId: factura.id,
                     productoId: item.productoId,
@@ -94,21 +94,21 @@ class FacturaServicio {
                     precio_unitario: producto.precio_unitario
                 }, { transaction });
 
-                // Update product stock
+                // Actualizar exitencias de producto
                 await producto.update({
                     stock: producto.stock - item.cantidad
                 }, { transaction });
             }
 
-            // Update invoice total
+            // Actualizar el total de la factura
             await factura.update({ total }, { transaction });
 
             await transaction.commit();
 
-            // Get complete invoice data for PDF generation
+            // Obtener datos completos para la creacion del PDF
             const facturaCompleta = await this.obtenerFacturaParaPDF(factura.id);
 
-            // Generate PDF asynchronously
+            // Generar PDF
             pdfService.generarFactura(facturaCompleta)
                 .catch(err => console.error("Error al generar PDF:", err));
                 
@@ -124,10 +124,10 @@ class FacturaServicio {
         try {
             const factura = await this.obtenerFacturaPorId(id);
             
-            // Prepare client data
+            // Preparar datos del cliente
             factura.clienteData = factura.cliente;
             
-            // Prepare details data
+            // Preparar datos de detalle
             const detalles = factura.detalles || [];
             factura.detallesData = detalles.map(detalle => ({
                 ...detalle.toJSON(),
@@ -139,6 +139,113 @@ class FacturaServicio {
             throw new Error(`Error preparando factura para PDF: ${error.message}`);
         }
     }
+
+    async eliminarFactura(id) {
+        const transaction = await sequelize.transaction();
+
+        try {
+            // Verificar que la factura exista
+            const factura = await Factura.findByPk(id, { transaction });
+            if (!factura) {
+                throw new Error('Factura no encontrada');
+            }
+
+            // Eliminar los detalles de la factura
+            await DetalleFactura.destroy({
+                where: { facturaId: id },
+                transaction
+            });
+
+            // Eliminar la factura
+            await Factura.destroy({
+                where: { id },
+                transaction
+            });
+
+            await transaction.commit();
+        } catch (error) {
+            await transaction.rollback();
+            throw new Error(`Error eliminando factura: ${error.message}`);
+        }
+    }
+
+    async actualizarFactura(id, datosFactura) {
+        const transaction = await sequelize.transaction();
+
+        try {
+            const factura = await Factura.findByPk(id, {
+                include: [
+                    { model: DetalleFactura, as: 'detalles', include: ['producto'] }
+                ],
+                transaction
+            });
+
+            if (!factura) throw new Error('Factura no encontrada');
+
+            const { clienteId, usuarioId, productos } = datosFactura;
+
+            // Restaurar stock anterior
+            for (const detalle of factura.detalles) {
+                const producto = detalle.producto;
+                await producto.update({
+                    stock: producto.stock + detalle.cantidad
+                }, { transaction });
+            }
+
+            // Eliminar detalles anteriores
+            await DetalleFactura.destroy({ where: { facturaId: id }, transaction });
+
+            let nuevoTotal = 0;
+
+            // Agregar nuevos detalles y actualizar stock
+            for (const item of productos) {
+                const producto = await Producto.findByPk(item.productoId);
+                if (!producto) throw new Error(`Producto ${item.productoId} no encontrado`);
+
+                if (producto.stock < item.cantidad) {
+                    throw new Error(`Stock insuficiente para ${producto.nombre}`);
+                }
+
+                const subtotal = producto.precio_unitario * item.cantidad;
+                nuevoTotal += subtotal;
+
+                await DetalleFactura.create({
+                    facturaId: id,
+                    productoId: item.productoId,
+                    cantidad: item.cantidad,
+                    precio_unitario: producto.precio_unitario
+                }, { transaction });
+
+                await producto.update({
+                    stock: producto.stock - item.cantidad
+                }, { transaction });
+            }
+
+            // Actualizar la factura
+            await factura.update({
+                clienteId,
+                usuarioId,
+                total: nuevoTotal,
+                fecha: new Date() // opcionalmente actualizas la fecha
+            }, { transaction });
+
+            await transaction.commit();
+
+            const facturaActualizada = await this.obtenerFacturaParaPDF(id);
+
+            // Regenerar el PDF
+            pdfService.generarFactura(facturaActualizada)
+                .catch(err => console.error("Error al generar PDF:", err));
+
+            return facturaActualizada;
+
+        } catch (error) {
+            await transaction.rollback();
+            throw new Error(`Error actualizando factura: ${error.message}`);
+        }
+    }
 }
+
+
 
 export const facturaServicio = new FacturaServicio();

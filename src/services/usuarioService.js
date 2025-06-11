@@ -24,7 +24,7 @@ class UsuarioServicio {
 
     async crearUsuario(nuevoUsuario) {
         try {
-            // Validate required fields
+            // Validar campos requeridos
             const requiredFields = ['nombre', 'usuario'];
             const missingFields = requiredFields.filter(field => !nuevoUsuario[field]);
             
@@ -32,7 +32,7 @@ class UsuarioServicio {
                 throw new Error(`Faltan campos requeridos: ${missingFields.join(', ')}`);
             }
             
-            // Check for duplicate username
+            // Revisar si hay nombre duplicado
             const usuarioExistente = await Usuario.findOne({ where: { usuario: nuevoUsuario.usuario } });
             if (usuarioExistente) {
                 throw new Error('El nombre de usuario ya está en uso');
@@ -47,7 +47,7 @@ class UsuarioServicio {
 
     async actualizarUsuario(id, datosActualizados) {
         try {
-            // Prevent username conflict with other users
+            // Prevenir que el usuario entre en conflicto con otros nombres
             if (datosActualizados.usuario) {
                 const usuarioExistente = await Usuario.findOne({
                     where: {

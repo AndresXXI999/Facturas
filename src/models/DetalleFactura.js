@@ -7,7 +7,7 @@ const DetalleFactura = sequelize.define('DetalleFactura', {
         primaryKey: true,
         autoIncrement: true,
     },
-    facturaId: {  // Updated field name
+    facturaId: {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
@@ -20,14 +20,14 @@ const DetalleFactura = sequelize.define('DetalleFactura', {
         allowNull: false,
         defaultValue: 1
     },
-    precio_unitario: {  // Renamed field
+    precio_unitario: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
         field: 'precio_unitario'
     }
 }, {
     timestamps: false,
-    tableName: 'DETALLE_FACTURA'  // Updated table name
+    tableName: 'DETALLE_FACTURA'
 });
 
 export default DetalleFactura;

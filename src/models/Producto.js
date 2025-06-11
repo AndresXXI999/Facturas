@@ -11,17 +11,17 @@ const Producto = sequelize.define('Producto', {
         type: DataTypes.STRING(100),
         allowNull: false,
     },
-    precio_unitario: {  // Renamed field
+    precio_unitario: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
-        field: 'precio_unitario'  // Maps to database column
+        field: 'precio_unitario'
     },
     stock: {
         type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 0
     },
-    proveedorId: {  // Added foreign key
+    proveedorId: {
         type: DataTypes.INTEGER,
         allowNull: false,
         field: 'id_proveedor'

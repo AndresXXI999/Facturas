@@ -1,6 +1,7 @@
 import { sequelize } from '../config/database.js'
 import { DataTypes } from 'sequelize';
 
+//Modelo y creacion (en caso de no existir) del modelo cliente
 const Cliente = sequelize.define(
     'Cliente', {
         id: {
@@ -12,7 +13,7 @@ const Cliente = sequelize.define(
             type: DataTypes.STRING(50),
             allowNull: false,
         },
-        direccion: {  // Added field
+        direccion: {
             type: DataTypes.STRING(50),
             allowNull: false,
         },
@@ -21,7 +22,7 @@ const Cliente = sequelize.define(
             allowNull: false,
             unique: true
         },
-        correo: {  // Added field
+        correo: {
             type: DataTypes.STRING(50),
             allowNull: false,
             validate: { isEmail: true }
